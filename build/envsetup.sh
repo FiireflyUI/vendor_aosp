@@ -5,18 +5,15 @@ Additional functions:
 - mmp:             Builds all of the modules in the current directory and pushes them to the device.
 - mmap:            Builds all of the modules in the current directory and its dependencies, then pushes the package to the device.
 - mmmp:            Builds all of the modules in the supplied directories and pushes them to the device.
-- pixelgerrit:     A Git wrapper that fetches/pushes patch from/to PixelExperience Gerrit Review.
-- pixelrebase:     Rebase a Gerrit change and push it again.
 - aospremote:      Add git remote for matching AOSP repository.
 - cloremote:       Add git remote for matching CodeLinaro repository.
-- githubremote:    Add git remote for PixelExperience Github.
+- githubremote:    Add git remote for FireflyUI Github.
 - mka:             Builds using SCHED_BATCH on all processors.
 - mkap:            Builds the module(s) using mka and pushes them to the device.
 - cmka:            Cleans and builds using mka.
 - repodiff:        Diff 2 different branches or tags within the same repo
 - repolastsync:    Prints date and time of last repo sync.
 - reposync:        Parallel repo sync using ionice and SCHED_BATCH.
-- repopick:        Utility to fetch changes from PixelExperience Gerrit.
 - installboot:     Installs a boot.img to the connected device.
 - installrecovery: Installs a recovery.img to the connected device.
 EOF
@@ -92,7 +89,7 @@ alias bib=breakfast
 function eat()
 {
     if [ "$OUT" ] ; then
-        ZIPPATH=`ls -tr "$OUT"/PixelExperience-*.zip | tail -1`
+        ZIPPATH=`ls -tr "$OUT"/FireflyUI-*.zip | tail -1`
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
             return 1
@@ -100,7 +97,7 @@ function eat()
         echo "Waiting for device..."
         adb wait-for-device-recovery
         echo "Found device"
-        if (adb shell getprop org.pixelexperience.device | grep -q "$CUSTOM_BUILD"); then
+        if (adb shell getprop com.fireflyui.device | grep -q "$CUSTOM_BUILD"); then
             echo "Rebooting to sideload for install"
             adb reboot sideload-auto-reboot
             adb wait-for-sideload
@@ -300,7 +297,7 @@ function githubremote()
 
     local PROJECT=$(echo $REMOTE | sed -e "s#platform/#android/#g; s#/#_#g")
 
-    git remote add github https://github.com/PixelExperience/$PROJECT
+    git remote add github https://github.com/FiireflyUI/$PROJECT
     echo "Remote 'github' created"
 }
 
@@ -331,7 +328,7 @@ function installboot()
     adb wait-for-device-recovery
     adb root
     adb wait-for-device-recovery
-    if (adb shell getprop org.pixelexperience.device | grep -q "$CUSTOM_BUILD");
+    if (adb shell getprop com.fireflyui.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/boot.img /cache/
         adb shell dd if=/cache/boot.img of=$PARTITION
@@ -369,7 +366,7 @@ function installrecovery()
     adb wait-for-device-recovery
     adb root
     adb wait-for-device-recovery
-    if (adb shell getprop org.pixelexperience.device | grep -q "$CUSTOM_BUILD");
+    if (adb shell getprop com.fireflyui.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
@@ -753,7 +750,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop org.pixelexperience.device | grep -q "$CUSTOM_BUILD") || [ "$FORCE_PUSH" = "true" ];
+    if (adb shell getprop com.fireflyui.device | grep -q "$CUSTOM_BUILD") || [ "$FORCE_PUSH" = "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices \
